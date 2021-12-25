@@ -1,0 +1,3 @@
+﻿  System.cpp
+F:\ACEngine\src\Core\System.cpp(55,57): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  ACEngine.vcxproj -> F:\ACEngine\x64\Debug\ACEngine.exe
