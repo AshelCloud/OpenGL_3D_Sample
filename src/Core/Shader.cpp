@@ -1,7 +1,8 @@
-#include "Shader.h"
+#include "Shader.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const GLchar* vsPath, const GLchar* fsPath)
 {
@@ -111,6 +112,17 @@ void Shader::SetVec3(const std::string& name, float x, float y, float z) const
 void Shader::SetVec4(const std::string& name, float x, float y, float z, float w) const
 {
 	glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+}
+
+void Shader::SetInt(const std::string& name, int value)
+{
+	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::SetMat4(const std::string& name, const glm::mat4& mat)
+{
+	unsigned int loc = glGetUniformLocation(ID, name.c_str());
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::Release()

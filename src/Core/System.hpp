@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "Shader.h"
+#include "Shader.hpp"
 
 
 class System
@@ -24,8 +24,8 @@ private:
 	bool SystemInitialize();
 
 	//클래스 만들기전 임시
-	unsigned int VAO, VBO;
-
+	unsigned int VAO, VBO, EBO;
+	unsigned int texture_1, texture_2;
 private:
 	GLFWwindow* windowContext;
 	Shader* shader;

@@ -20,13 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\glad\glad.c" />
+    <ClCompile Include="..\include\stb_image\stb_image.cpp" />
     <ClCompile Include="..\src\Core\Shader.cpp" />
     <ClCompile Include="..\src\Core\System.cpp" />
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Core\Shader.h" />
-    <ClInclude Include="..\src\Core\System.h" />
+    <ClInclude Include="..\include\stb_image\stb_image.h" />
+    <ClInclude Include="..\src\Core\Shader.hpp" />
+    <ClInclude Include="..\src\Core\System.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
