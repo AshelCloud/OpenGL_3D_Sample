@@ -3,6 +3,10 @@
 #include "stb_image/stb_image.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Math.h"
+#include "Mouse.h"
+
+Camera* System::camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 System::System() :
 	windowContext(nullptr), shader(nullptr), VAO(0), VBO(0)
@@ -26,29 +30,72 @@ bool System::Initialize()
 	std::string fs = "F:/ACEngine/src/Shader/";
 	shader = new Shader((fs + "vshader.vs").c_str(), (fs + "fshader.fs").c_str());
 
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
 	float vertices[] = {
-		// positions            // texture coords
-		 0.5f,  0.5f, 0.0f,		1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f  // top left 
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
-	unsigned int indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};
+
+	// world space positions of our cubes
+	cubePositions[0] = glm::vec3(0.0f, 0.0f, 0.0f);
+	cubePositions[1] = glm::vec3(2.0f, 5.0f, -15.0f);
+	cubePositions[2] = glm::vec3(-1.5f, -2.2f, -2.5f);
+	cubePositions[3] = glm::vec3(-3.8f, -2.0f, -12.3f);
+	cubePositions[4] = glm::vec3(2.4f, -0.4f, -3.5f);
+	cubePositions[5] = glm::vec3(-1.7f, 3.0f, -7.5f);
+	cubePositions[6] = glm::vec3(1.3f, -2.0f, -2.5f);
+	cubePositions[7] = glm::vec3(1.5f, 2.0f, -2.5f);
+	cubePositions[8] = glm::vec3(1.5f, 0.2f, -1.5f);
+	cubePositions[9] = glm::vec3(-1.3f, 1.0f, -1.5f);
+
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -79,6 +126,7 @@ bool System::Initialize()
 	{
 		std::cout << "Failed to load texture" << std::endl;
 	}
+
 	stbi_image_free(data);
 	// texture 2
 	// ---------
@@ -108,30 +156,51 @@ bool System::Initialize()
 	shader->SetInt("texture_1", 0);
 	shader->SetInt("texture_2", 1);
 
+	glEnable(GL_DEPTH_TEST);
 
 	return true;
+}
+
+void System::Update()
+{
+	Time::GetInstance().Update();
+
+	glm::mat4 projection = glm::perspective(glm::radians(fov), 800.f / 600.f, 0.1f, 100.0f);
+	shader->SetMat4("projection", projection);
 }
 
 void System::Render()
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_2);
 
-	glm::mat4 transform;
-	transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
-	float scaleAmount = sin(glfwGetTime());
-	transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-
 	shader->Use();
-	shader->SetMat4("transform", transform);
 
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glm::mat4 view = glm::lookAt(camera->GetPosition(), camera->GetPosition() + camera->GetFrontVector(), camera->GetUpVector());
+	shader->SetMat4("view", view);
+
+	// render boxes
+	glBindVertexArray(VAO);
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		// calculate the model matrix for each object and pass it to shader before drawing
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, cubePositions[i]);
+		float angle = 20.0f * i;
+		if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
+			angle = glfwGetTime() * 25.0f;
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		shader->SetMat4("model", model);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
 
 	glfwSwapBuffers(windowContext);
 	glfwPollEvents();
@@ -172,7 +241,33 @@ void System::ProcessInput()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+
+	float cameraSpeed = 2.5f * Time::GetInstance().GetDeltaTime();
+
+	if (glfwGetKey(windowContext, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera->Translate(cameraSpeed * camera->GetFrontVector());
+	}
+	if (glfwGetKey(windowContext, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera->Translate(-(cameraSpeed * camera->GetFrontVector()));
+	}
+	if (glfwGetKey(windowContext, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		camera->Translate(-(glm::normalize(glm::cross(camera->GetFrontVector(), camera->GetUpVector())) * cameraSpeed));
+	}
+	if (glfwGetKey(windowContext, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		camera->Translate(glm::normalize(glm::cross(camera->GetFrontVector(), camera->GetUpVector())) * cameraSpeed);
+	}
 }
+
+double System::mouseX = 400;
+double System::mouseY = 300;
+float System::yaw = -90.f;
+float System::pitch = 0.f;
+bool System::firstMouse = true;
+float System::fov = 45.f;
 
 bool System::SystemInitialize()
 {
@@ -203,12 +298,18 @@ bool System::SystemInitialize()
 
 	glViewport(0, 0, 800, 600);
 
+	glfwSetInputMode(windowContext, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	//static 함수로 할필요가 있을까
 	//뭐 일단 처리하는건 없으니 람다로하고 나중에 처리하자
 	glfwSetFramebufferSizeCallback(windowContext, [](GLFWwindow* window, int width, int height)
-		{
-			glViewport(0, 0, width, height);
-		});
+	{
+		glViewport(0, 0, width, height);
+	});
+
+	//이건 람다가 안되네
+	glfwSetCursorPosCallback(windowContext, MouseCallback);
+	glfwSetScrollCallback(windowContext, ScrollCallback);
 
 	return true;
 }

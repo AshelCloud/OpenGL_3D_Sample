@@ -39,6 +39,12 @@
     <ClCompile Include="..\include\stb_image\stb_image.cpp">
       <Filter>Lib\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Core\Camera.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Core\Mouse.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Core\System.hpp">
@@ -49,6 +55,18 @@
     </ClInclude>
     <ClInclude Include="..\include\stb_image\stb_image.h">
       <Filter>Lib\stb_image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\Camera.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\Math.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\Singleton.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\Mouse.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

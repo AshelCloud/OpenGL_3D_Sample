@@ -12,6 +12,7 @@ int main()
 		while (!system->ShouldCloseWindow())
 		{
 			system->ProcessInput();
+			system->Update();
 			system->Render();
 		}
 	}
